@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Scanner;
+import java.util.Vector;
 
 
 public class cashRegister 
@@ -12,13 +13,13 @@ public class cashRegister
 	private double profitMargin = .3;
 	private double salesTax = .06;
 	private boolean registerOn = false;
-	private String dataFile = "database.txt"; //TODO CREATE TEXT FILE AND FILL WITH AN INVENTORY DATABASE
-	@SuppressWarnings("unused")
+	private String dataFile = "database.txt"; 
 	private Scanner inputStream = null;
+	private Vector<Inventory> database;
 	
 	public cashRegister()
 	{
-		//setting the cash register   mpower to on
+		//setting the cash register power to on
 		registerOn = true;
 		
 		//creating a input stream to get database from file
@@ -39,9 +40,18 @@ public class cashRegister
 	}
 	private void createDatabase() 
 	{
+		database = new Vector<Inventory>();
 		while(inputStream.hasNext())
 		{
-			System.out.println(inputStream.next());
+			Inventory temp = new Inventory();			
+			String input = inputStream.next();
+			temp.setItemNumber(Integer.parseInt(input));
+			input = inputStream.next();
+			temp.setCost(Double.parseDouble(input));
+			input = inputStream.next();
+			temp.setQuantity(Integer.parseInt(input));
+			temp.getTotalCost();
+			database.add(temp);
 		}
 	}
 }
