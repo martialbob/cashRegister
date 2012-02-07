@@ -3,7 +3,11 @@ package r;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 
@@ -15,28 +19,38 @@ public class cashRegister
 	private double salesTax = .06;
 	private boolean registerOn = false;
 	private String dataFile = "database.txt"; 
-	private Scanner inputStream = null;
 	private Vector<Inventory> database;
 	private Scanner cin = new Scanner(System.in);
 	private double calculatedPrice = 0;
+	private Scanner inputStream = null;
+
+	
+	
 	
 	public cashRegister()
 	{
-		//setting the cash register power to on
-		registerOn = true;		
-		//creating a input stream to get database from file
-		try 
-		{
-			inputStream = new Scanner(new BufferedReader(new FileReader(dataFile)));
+		//finding and opening data file
+		try {
+			inputStream = new Scanner(
+			        new BufferedReader(
+			          new FileReader(dataFile)));
 		} 
-		//checking to see if file was found
-		catch (FileNotFoundException e) 
+		catch (FileNotFoundException e1) 
 		{
-			System.out.println("Database file " + dataFile + " not found.  Ending program.\nError 001, see Readme for Solution.");
+			System.out.println("File not found.\nExiting program");
 			System.exit(001);
 		}
+		
+		//setting the cash register power to on
+		registerOn = true;		
+
 		//if file found create a database from database.txt file
-		createDatabase();
+		try {
+			createDatabase();
+		} catch (IOException e) {
+			System.out.println("Error creating database.\nEnding Program.");
+			System.exit(007);
+		}
 		//we have a database(based on the vector class) to work with... now lets do some work!
 		while(registerOn)
 		{
@@ -47,21 +61,17 @@ public class cashRegister
 			
 		}
 	}
-	private void createDatabase() 
+	private void createDatabase() throws IOException 
 	{
 		//creating a vector
 		database = new Vector<Inventory>();
 		while(inputStream.hasNext())
 		{
-			//building invetory items... putting data into them, and adding them to our database vector
-			Inventory temp = new Inventory();			
-			String input = inputStream.next();
-			temp.setItemNumber(Integer.parseInt(input));
-			input = inputStream.next();
-			temp.setCost(Double.parseDouble(input));
-			input = inputStream.next();
-			temp.setQuantity(Integer.parseInt(input));
-			temp.getTotalCost();
+			//building inventory items... putting data into them, and adding them to our database vector
+			Inventory temp = new Inventory();
+			temp.setItemNumber(inputStream.nextInt());
+			temp.setCost(inputStream.nextDouble());
+			temp.setQuantity(inputStream.nextInt());
 			database.add(temp);
 		}
 	}
@@ -91,7 +101,7 @@ public class cashRegister
 				System.out.println("Your input was not a number, please try again");
 				validInput = false;
 			}
-			//TODO check to make sure menu item exists..
+			
 		}
 		//it was a number!! lets return it!
 		return decision;
